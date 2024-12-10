@@ -34,7 +34,13 @@ const CartItem = ({ onContinueShopping }) => {
     };
 
     const handleDecrement = (item) => {
+    if (item.quantity > 1) {
+        // Decrement quantity if greater than 1
         dispatch(updateQuantity(item.quantity));
+    } else {
+        // Remove item if quantity reaches 0
+        dispatch(removeItem(item));
+    }
     };
 
     const handleRemove = (item) => {
@@ -43,7 +49,10 @@ const CartItem = ({ onContinueShopping }) => {
 
     // Calculate total cost based on quantity for an item
     const calculateTotalCost = (item) => {
+        let subTotal = item.cost * item.quantity;
+        return subTotal;
     };
+   
 
     return (
         <div className="cart-container">
