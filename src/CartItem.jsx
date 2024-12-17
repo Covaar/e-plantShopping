@@ -7,52 +7,42 @@ const CartItem = ({ onContinueShopping }) => {
     const cart = useSelector(state => state.cart.items);
     const dispatch = useDispatch();
 
-    // Calculate total amount for all products in the cart
     const calculateTotalAmount = () => {
-        let totalCost = 0;
-        if (section === "cart") {
-            cartItems.forEach((item) => {
-                totalCost += item.cost * item.quantity;
-            });
-        }
-        return totalCost;
+        return cart.reduce((total, item) => {
+            console.log(item.cost)
+            const price = typeof item.cost === "string" ? parseFloat(item.cost.replace("$", "")) : item.cost;
+            console.log(price)
+            return total + price * item.quantity;
+        }, 0);
     };
 
     const handleContinueShopping = (e) => {
-        e.preventDefault();
-        if (onContinueShopping) {
-            onContinueShopping();
+             if (onContinueShopping) {
+            onContinueShopping(e);
         };
-    };
-    const handleCheckoutShopping = (e) => {
-        alert('Functionality to be added for future reference');
     };
 
     const handleIncrement = (item) => {
-        dispatch(updateQuantity(item.quantity));
-
+        dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
     };
 
     const handleDecrement = (item) => {
-    if (item.quantity > 1) {
-        // Decrement quantity if greater than 1
-        dispatch(updateQuantity(item.quantity));
-    } else {
-        // Remove item if quantity reaches 0
-        dispatch(removeItem(item));
-    }
+        if (item.quantity > 1) {
+            dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+        } else {
+            dispatch(removeItem(item.name));
+        }
     };
 
     const handleRemove = (item) => {
-        dispatch(removeItem(item));
+        dispatch(removeItem(item.name));
     };
 
     // Calculate total cost based on quantity for an item
     const calculateTotalCost = (item) => {
-        let subTotal = item.cost * item.quantity;
-        return subTotal;
+        const price = typeof item.cost === "string" ? parseFloat(item.cost.replace("$", "")) : item.cost;
+        return price * item.quantity;
     };
-   
 
     return (
         <div className="cart-container">
@@ -75,11 +65,13 @@ const CartItem = ({ onContinueShopping }) => {
                     </div>
                 ))}
             </div>
-            <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'></div>
+            <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'>
+                Total Quantity: {cart.reduce((sum, item) => sum + item.quantity, 0)}
+            </div>
             <div className="continue_shopping_btn">
-                <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
+                <button className="get-started-button" onClick={handleContinueShopping}>Continue Shopping</button>
                 <br />
-                <button className="get-started-button1">Checkout</button>
+                <button className="get-started-button1" onClick={() => alert('Checkout functionality to be implemented')}>Checkout</button>
             </div>
         </div>
     );
